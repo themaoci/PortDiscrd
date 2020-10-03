@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using CefSharp;
 
-namespace SharpBrowser {
+namespace PortDiscrd {
 	internal class RequestHandler : IRequestHandler {
 		MainForm myForm;
 

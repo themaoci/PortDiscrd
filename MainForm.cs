@@ -14,10 +14,10 @@ using Timer = System.Windows.Forms.Timer;
 using System.Drawing;
 using System.Reflection;
 
-namespace SharpBrowser {
+namespace PortDiscrd {
 
 	/// <summary>
-	/// The main SharpBrowser form, supporting multiple tabs.
+	/// The main PortDiscrd form, supporting multiple tabs.
 	/// We used the x86 version of CefSharp V51, so the app works on 32-bit and 64-bit machines.
 	/// If you would only like to support 64-bit machines, simply change the DLL references.
 	/// </summary>
@@ -27,12 +27,15 @@ namespace SharpBrowser {
 
 		public static MainForm Instance;
 
-		public static string Branding = "PortDisco";
+		public static string Branding = "PortDiscrd";
 		public static string UserAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36";
 		public static string AcceptLanguage = "en-US,en;q=0.9";
 		public static string HomepageURL = "https://www.discord.com/login";
 		public static string NewTabURL = "https://www.discord.com/login";
 		public static string SearchURL = "https://www.google.com/search?q=";
+
+		public static string InternalURL = "portdiscrd";
+		public static string DownloadURL = "portdiscrd://storage/downloads.html";
 
 		public bool WebSecurity = true;
 		public bool CrossDomainSecurity = true;
@@ -75,7 +78,7 @@ namespace SharpBrowser {
 		public static Assembly assembly = null;
 		public Stream GetResourceStream(string filename, bool withNamespace = true) {
 			try {
-				return assembly.GetManifestResourceStream("SharpBrowser.Resources." + filename);
+				return assembly.GetManifestResourceStream("PortDiscrd.Resources." + filename);
 			} catch (System.Exception ex) { }
 			return null;
 		}
@@ -92,7 +95,8 @@ namespace SharpBrowser {
 
 			// browser hotkeys
 			//KeyboardHandler.AddHotKey(this, CloseActiveTab, Keys.W, true);
-			KeyboardHandler.AddHotKey(this, CloseActiveTab, Keys.Escape, true);
+			KeyboardHandler.AddHotKey(this, OpenMenu, Keys.Escape, false, true);
+			KeyboardHandler.AddHotKey(this, CloseActiveTab, Keys.W, true);
 			KeyboardHandler.AddHotKey(this, GoBackTab, Keys.Back);
 			
 			//KeyboardHandler.AddHotKey(this, AddBlankWindow, Keys.N, true);
@@ -148,7 +152,6 @@ namespace SharpBrowser {
 		private LifeSpanHandler lHandler;
 		private KeyboardHandler kHandler;
 		private RequestHandler rHandler;
-		private static int TabCounter = 0;
 		/// <summary>
 		/// this is done just once, to globally initialize CefSharp/CEF
 		/// </summary>
@@ -161,14 +164,13 @@ namespace SharpBrowser {
 			settings.AcceptLanguageList = AcceptLanguage;
 			settings.IgnoreCertificateErrors = true;
 			settings.CachePath = GetAppDir("Cache");
-			Console.WriteLine("created tab no: " + TabPages.Items.Count);
 			Cef.Initialize(settings);
 
-			/*settings.RegisterScheme(new CefCustomScheme {
+			settings.RegisterScheme(new CefCustomScheme
+			{
 				SchemeName = InternalURL,
 				SchemeHandlerFactory = new SchemeHandlerFactory()
-			});*/
-
+			});
 
 			dHandler = new DownloadHandler(this);
 			lHandler = new LifeSpanHandler(this);
@@ -233,18 +235,11 @@ namespace SharpBrowser {
 				newUrl = url.PathToURL();
 
 			}
-
-
 			// load URL
 			CurBrowser.Load(newUrl);
 
 			// set URL in UI
 			SetFormURL(newUrl);
-
-			// always enable back btn
-			EnableBackButton(true);
-			EnableForwardButton(false);
-
 		}
 
 		private void SetFormTitle(string tabName) {
@@ -288,7 +283,6 @@ namespace SharpBrowser {
 		private bool IsBlank(string url) {
 			return (url == "" || url == "about:blank");
 		}
-
 		public void AddBlankWindow() {
 
 			// open a new instance of the browser
@@ -305,12 +299,8 @@ namespace SharpBrowser {
 			Process.Start(info);
 		}
 		public void AddBlankTab() {
-			AddNewBrowserTab("");
-			//this.InvokeOnParent(delegate() {
-				//TxtURL.Focus();
-			//});
+			AddNewBrowserTab(HomepageURL);
 		}
-
 		public ChromiumWebBrowser AddNewBrowserTab(string url, bool focusNewTab = true, string refererUrl = null) {
 			return (ChromiumWebBrowser)this.Invoke((Func<ChromiumWebBrowser>)delegate {
 
@@ -324,6 +314,8 @@ namespace SharpBrowser {
 				}
 
 				FATabStripItem tabStrip = new FATabStripItem();
+				tabStrip.ForeColor = Color.White;
+				tabStrip.BackColor = Color.Black;
 				tabStrip.Title = "New Tab";
 				TabPages.Items.Insert(TabPages.Items.Count - 1, tabStrip);
 				newStrip = tabStrip;
@@ -334,13 +326,11 @@ namespace SharpBrowser {
 				return newTab.Browser;
 			});
 		}
-		private Random rnd = new Random();
 		private SharpTab AddNewBrowser(FATabStripItem tabStrip, String url) {
 			if (url == "") url = NewTabURL;
 
 			ChromiumWebBrowser browser = new ChromiumWebBrowser(url);
 			var requestContextSettings = new RequestContextSettings { CachePath = GetAppDir("Cache/tmp_" + TabPages.Items.Count + "cache") };
-			Console.WriteLine("created tab no: " + TabPages.Items.Count);
 			browser.RequestContext = new RequestContext(requestContextSettings);
 			// set config
 			ConfigureBrowser(browser);
@@ -367,6 +357,7 @@ namespace SharpBrowser {
 				IsOpen = true,
 				Browser = browser,
 				Tab = tabStrip,
+				PrevURL = null,
 				OrigURL = url,
 				CurURL = url,
 				Title = "New Tab",
@@ -397,16 +388,14 @@ namespace SharpBrowser {
 		}
 		private void GoBackTab()
 		{
-			CurBrowser.Back();
+			if(CurBrowser.CanGoBack)
+				CurBrowser.Back();
 		}
-
-		/*private void GoForwardTab()
-		{
-			CurBrowser.Forward();
-		}*/
-
+		private void OpenMenu() {
+			ApplicationMenu.Visible = !ApplicationMenu.Visible;
+		}
 		public void CloseActiveTab() {
-			if (CurTab != null/* && TabPages.Items.Count > 2*/) {
+			if (CurTab != null && TabPages.Items.Count > 2) {
 
 				// remove tab and save its index
 				int index = TabPages.Items.IndexOf(TabPages.SelectedItem);
@@ -552,9 +541,6 @@ namespace SharpBrowser {
 		private void SetTabTitle(ChromiumWebBrowser browser, string text) {
 
 			text = text.Trim();
-			if (IsBlank(text)) {
-				text = "New Tab";
-			}
 
 			// save text
 			browser.Tag = text;
@@ -574,9 +560,6 @@ namespace SharpBrowser {
 
 		private void Browser_LoadingStateChanged(object sender, LoadingStateChangedEventArgs e) {
 			if (sender == CurBrowser) {
-
-				EnableBackButton(e.CanGoBack);
-				EnableForwardButton(e.CanGoForward);
 
 				if (e.IsLoading) {
 
@@ -636,11 +619,6 @@ namespace SharpBrowser {
 
 					SetFormURL(browser.Address);
 					SetFormTitle(browser.Tag.ConvertToString() ?? "New Tab");
-
-
-					EnableBackButton(browser.CanGoBack);
-					EnableForwardButton(browser.CanGoForward);
-
 				}
 			}
 
@@ -837,12 +815,12 @@ namespace SharpBrowser {
 		}
 
 		public void OpenDownloadsTab() {
-			/*if (downloadsStrip != null && ((ChromiumWebBrowser)downloadsStrip.Controls[0]).Address == DownloadsURL) {
+			if (downloadsStrip != null && ((ChromiumWebBrowser)downloadsStrip.Controls[0]).Address == DownloadURL) {
 				TabPages.SelectedItem = downloadsStrip;
 			} else {
-				ChromiumWebBrowser brw = AddNewBrowserTab(DownloadsURL);
+				ChromiumWebBrowser brw = AddNewBrowserTab(DownloadURL);
 				downloadsStrip = (FATabStripItem)brw.Parent;
-			}*/
+			}
 		}
 
 		#endregion
@@ -913,11 +891,15 @@ namespace SharpBrowser {
 			}
 		}
 
-		#endregion
 
 
+        #endregion
 
-	}
+        private void tabStrip1_Changed(object sender, EventArgs e)
+        {
+
+        }
+    }
 }
 
 /// <summary>
@@ -928,6 +910,7 @@ internal class SharpTab {
 	public bool IsOpen;
 
 	public string OrigURL;
+	public string PrevURL;
 	public string CurURL;
 	public string Title;
 

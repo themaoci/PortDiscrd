@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpBrowser", "SharpBrowser.csproj", "{703472B8-B275-4F3F-95B6-426036F8462E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortDiscrd", "PortDiscrd.csproj", "{703472B8-B275-4F3F-95B6-426036F8462E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02A00E5D-C304-4D93-9B5C-68B8D58FE428}
 	EndGlobalSection
 EndGlobal

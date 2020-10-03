@@ -1,6 +1,6 @@
 ﻿using CefSharp;
 
-namespace SharpBrowser {
+namespace PortDiscrd {
 	internal class LifeSpanHandler : ILifeSpanHandler {
 		MainForm myForm;
 

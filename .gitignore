@@ -283,3 +283,6 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+bin/x64
+bit/x86

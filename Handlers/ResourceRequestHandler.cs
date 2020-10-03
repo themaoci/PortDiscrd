@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using CefSharp.Callback;
 
-namespace SharpBrowser {
+namespace PortDiscrd {
 	internal class ResourceRequestHandler : IResourceRequestHandler {
 		readonly MainForm myForm;
 		public ResourceRequestHandler(MainForm form) {

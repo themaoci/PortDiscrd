@@ -1,6 +1,6 @@
 using CefSharp;
 
-namespace SharpBrowser {
+namespace PortDiscrd {
 	internal class SchemeHandlerFactory : ISchemeHandlerFactory {
 
 		public IResourceHandler Create(IBrowser browser, IFrame frame, string schemeName, IRequest request) {
