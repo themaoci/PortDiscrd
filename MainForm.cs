@@ -214,7 +214,7 @@ namespace PortDiscrd {
 		}
 
 		private void LoadURL(string url) {
-			Uri outUri;
+			/*Uri outUri;
 			string newUrl = url;
 			string urlLower = url.Trim().ToLower();
 
@@ -239,7 +239,7 @@ namespace PortDiscrd {
 			CurBrowser.Load(newUrl);
 
 			// set URL in UI
-			SetFormURL(newUrl);
+			SetFormURL(newUrl);*/
 		}
 
 		private void SetFormTitle(string tabName) {
@@ -500,6 +500,7 @@ namespace PortDiscrd {
 		}
 
 		private void Browser_URLChanged(object sender, AddressChangedEventArgs e) {
+			Console.WriteLine("URL Changed; " + e.Address);
 			InvokeIfNeeded(() => {
 
 				// if current tab
@@ -525,7 +526,7 @@ namespace PortDiscrd {
 		}
 
 		private void Browser_LoadError(object sender, LoadErrorEventArgs e) {
-			// ("Load Error:" + e.ErrorCode + ";" + e.ErrorText);
+			Console.WriteLine("|> Load Error:" + e.ErrorCode + "; " + e.ErrorText + "; " + e.FailedUrl);
 		}
 
 		private void Browser_TitleChanged(object sender, TitleChangedEventArgs e) {

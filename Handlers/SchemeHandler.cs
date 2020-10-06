@@ -50,6 +50,8 @@ namespace PortDiscrd {
 		// Returns:
 		//     see main summary
 		public bool Open(IRequest request, out bool handleRequest, ICallback callback) {
+			Console.WriteLine("Open >> " + request.Url);
+
 			uri = new Uri(request.Url);
 			fileName = uri.AbsolutePath;
 

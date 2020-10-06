@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using CefSharp;
@@ -73,6 +74,9 @@ namespace PortDiscrd {
 		//     Return true to cancel the navigation or false to allow the navigation to
 		//     proceed.
 		public bool OnBeforeBrowse(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, bool userGesture, bool isRedirect) {
+			Console.WriteLine("OnBeforeBrowse >> " + request.Url);
+			if (request.Url.StartsWith("https://images-ext-1") || request.Url.StartsWith("https://discord.com/api"))
+				return true;
 			return false;
 		}
 		
@@ -131,7 +135,8 @@ namespace PortDiscrd {
 		//     Return true to cancel the navigation or false to allow the navigation to
 		//     proceed in the source browser's top-level frame.
 		public bool OnOpenUrlFromTab(IWebBrowser browserControl, IBrowser browser, IFrame frame, string targetUrl, WindowOpenDisposition targetDisposition, bool userGesture) {
-			return false;
+			Console.WriteLine("OnOpenUrlFromTab >> " + targetUrl);
+			return true;
 		}
 		//
 		// Summary:

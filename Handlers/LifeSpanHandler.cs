@@ -1,4 +1,5 @@
 ﻿using CefSharp;
+using System;
 
 namespace PortDiscrd {
 	internal class LifeSpanHandler : ILifeSpanHandler {
@@ -149,8 +150,12 @@ namespace PortDiscrd {
 		public bool OnBeforePopup(IWebBrowser browserControl, IBrowser browser, IFrame frame, string targetUrl, string targetFrameName, WindowOpenDisposition targetDisposition, bool userGesture, IPopupFeatures popupFeatures, IWindowInfo windowInfo, IBrowserSettings browserSettings, ref bool noJavascriptAccess, out IWebBrowser newBrowser) {
 
 			// open popup in new tab!
+			Console.WriteLine("OnBeforePopup >> " + targetUrl);
+			if(!targetUrl.StartsWith("https://discord.com"))
+				System.Diagnostics.Process.Start(targetUrl);
+
 			newBrowser = null;
-			myForm.AddNewBrowserTab(targetUrl);
+			//myForm.AddNewBrowserTab(targetUrl);
 
 			return true;
 
