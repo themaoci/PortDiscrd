@@ -27,15 +27,16 @@ namespace PortDiscrd {
 
 		public static MainForm Instance;
 
-		public static string Branding = "PortDiscrd";
-		public static string UserAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36";
-		public static string AcceptLanguage = "en-US,en;q=0.9";
-		public static string HomepageURL = "https://www.discord.com/login";
-		public static string NewTabURL = "https://www.discord.com/login";
-		public static string SearchURL = "https://www.google.com/search?q=";
+		public static readonly string Branding = "PortDiscrd";
+		public static readonly string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
+		//public static string UserAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36";
+		public static readonly string AcceptLanguage = "en-US,en;q=0.9";
+		public static readonly string HomepageURL = "https://www.discord.com/login";
+		public static readonly string NewTabURL = "https://www.discord.com/login";
+		public static readonly string SearchURL = "https://www.google.com/search?q=";
 
-		public static string InternalURL = "portdiscrd";
-		public static string DownloadURL = "portdiscrd://storage/downloads.html";
+		public static readonly string InternalURL = "sharpbrowser";
+		public static readonly string DownloadURL = "sharpbrowser://storage/downloads.html";
 
 		public bool WebSecurity = true;
 		public bool CrossDomainSecurity = true;
@@ -160,17 +161,18 @@ namespace PortDiscrd {
 			CefSharpSettings.LegacyJavascriptBindingEnabled = true;
 			CefSharpSettings.WcfEnabled = false;
 			CefSettings settings = new CefSettings();
-			settings.UserAgent = UserAgent;
-			settings.AcceptLanguageList = AcceptLanguage;
-			settings.IgnoreCertificateErrors = true;
-			settings.CachePath = GetAppDir("Cache");
-			Cef.Initialize(settings);
-
 			settings.RegisterScheme(new CefCustomScheme
 			{
 				SchemeName = InternalURL,
 				SchemeHandlerFactory = new SchemeHandlerFactory()
 			});
+			settings.UserAgent = UserAgent;
+			settings.AcceptLanguageList = AcceptLanguage;
+			settings.IgnoreCertificateErrors = true;
+			settings.CachePath = GetAppDir("Cache");
+			//settings.BrowserSubprocessPath = AppDomain.CurrentDomain.BaseDirectory + "PortDiscrd.Subprocess.exe";
+			Cef.Initialize(settings);
+
 
 			dHandler = new DownloadHandler(this);
 			lHandler = new LifeSpanHandler(this);
@@ -900,6 +902,11 @@ namespace PortDiscrd {
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+			AddNewBrowserTab(DownloadURL);
+		}
     }
 }
 

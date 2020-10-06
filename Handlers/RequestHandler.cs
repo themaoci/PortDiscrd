@@ -75,7 +75,7 @@ namespace PortDiscrd {
 		//     proceed.
 		public bool OnBeforeBrowse(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, bool userGesture, bool isRedirect) {
 			Console.WriteLine("OnBeforeBrowse >> " + request.Url);
-			if (request.Url.StartsWith("https://images-ext-1") || request.Url.StartsWith("https://discord.com/api"))
+			if (request.Url.StartsWith("https://images-ext-") || request.Url.StartsWith("https://discord.com/api"))
 				return true;
 			return false;
 		}
@@ -266,9 +266,5 @@ namespace PortDiscrd {
 		public bool OnSelectClientCertificate(IWebBrowser chromiumWebBrowser, IBrowser browser, bool isProxy, string host, int port, X509Certificate2Collection certificates, ISelectClientCertificateCallback callback) {
 			return false;
 		}
-
-
-
-
 	}
 }

@@ -66,6 +66,7 @@ namespace PortDiscrd {
 			// if url is browser file
 			if (uri.Host == "storage") {
 				fileName = appPath + uri.Host + fileName;
+				Console.WriteLine(File.Exists(fileName) + " - " + fileName);
 				if (File.Exists(fileName)) {
 					Task.Factory.StartNew(() => {
 						using (callback) {
